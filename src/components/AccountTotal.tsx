@@ -1,7 +1,19 @@
 import { VStack, Text, Input, InputField } from "@gluestack-ui/themed";
-import React from "react";
+import React, { useState } from "react";
 
-export default function AccountTotal() {
+type Props = {
+  setTotalValue: Function;
+};
+
+export default function AccountTotal({ setTotalValue }: Props) {
+  const formatTotalValue = (e: string) => {
+    if (e.includes(",")) {
+      setTotalValue(parseFloat(e.replace(",", ".")));
+    } else {
+      setTotalValue(parseFloat(e));
+    }
+  };
+
   return (
     <VStack
       w="$full"
@@ -16,7 +28,17 @@ export default function AccountTotal() {
         Valor total
       </Text>
 
-      <Input variant="outline" h="$16" borderWidth="$0">
+      <Input
+        variant="outline"
+        h="$16"
+        borderWidth="$0"
+        flexDirection="row"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <Text color="$white" size="4xl">
+          R$
+        </Text>
         <InputField
           placeholder="0,00"
           fontSize="$6xl"
@@ -24,6 +46,9 @@ export default function AccountTotal() {
           textAlign="center"
           fontWeight="$bold"
           keyboardType="numeric"
+          onChangeText={(e) => formatTotalValue(e)}
+          maxLength={8}
+          px="$2"
         />
       </Input>
     </VStack>

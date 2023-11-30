@@ -9,12 +9,10 @@ import {
   HStack,
   Text,
 } from "@gluestack-ui/themed";
+import { PersonType } from "../models/PersonType";
 
 type Props = {
-  data: {
-    id: string;
-    name: string;
-  };
+  data: PersonType;
 };
 
 export function Person({ data }: Props) {
