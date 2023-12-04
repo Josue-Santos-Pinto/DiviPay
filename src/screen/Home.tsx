@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import * as Contacts from "expo-contacts";
-import { VStack, Text, Divider, CheckboxGroup } from "@gluestack-ui/themed";
+import { VStack, Divider, CheckboxGroup } from "@gluestack-ui/themed";
 import { Person } from "../components/Person";
 import AccountTotal from "../components/AccountTotal";
 import { FlatList, ListRenderItemInfo } from "react-native";
@@ -34,15 +34,21 @@ export default function Home() {
     }
   }
 
-  function renderItem({ item }: ListRenderItemInfo<PersonType>) {
-    return <Person data={item} />;
-  }
-
   function unitaryAccountText() {
     if (totalValue > 0 && selected.length > 0) {
-      setUnitaryValue(totalValue / (selected.length + 1));
+      setUnitaryValue(totalValue / selected.length);
     }
   }
+  const renderItem = useCallback(
+    ({ item }: ListRenderItemInfo<PersonType>) => {
+      return <Person data={item} />;
+    },
+    [contacts]
+  );
+
+  const itemSeparatorComponent = useCallback(() => {
+    return <Divider my="$4" bgColor="$secondary700" />;
+  }, [contacts]);
 
   useEffect(() => {
     unitaryAccountText();
@@ -52,25 +58,22 @@ export default function Home() {
     fetchContacts();
   }, []);
 
+  console.log(selected);
+
   return (
     <VStack bg="$black" flex={1}>
       <AccountTotal setTotalValue={setTotalValue} />
       <CheckboxGroup value={selected} flex={1} onChange={onCheckboxChanged}>
+        <VStack pt={15} px={24}>
+          <Person data={{ id: (contacts.length + 1).toString(), name: "Eu" }} />
+          <Divider my="$4" bgColor="$secondary700" />
+        </VStack>
         <FlatList
           data={contacts}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          ItemSeparatorComponent={() => (
-            <Divider my="$4" bgColor="$secondary700" />
-          )}
-          contentContainerStyle={{ padding: 24, paddingBottom: 100 }}
-          windowSize={5}
-          onEndReachedThreshold={0.1}
-          getItemLayout={(data, index) => ({
-            length: 120, // Altura do item
-            offset: 120 * index, // Deslocamento do item
-            index,
-          })}
+          keyExtractor={(item) => `${item.id}`}
+          ItemSeparatorComponent={itemSeparatorComponent}
+          contentContainerStyle={{ padding: 24, paddingBottom: 200 }}
         />
       </CheckboxGroup>
       {totalValue > 0 && selected.length > 0 && (

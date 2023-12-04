@@ -45,7 +45,7 @@ export default function AccountTotal({ setTotalValue }: Props) {
           color="$white"
           textAlign="center"
           fontWeight="$bold"
-          keyboardType="numeric"
+          keyboardType="decimal-pad"
           onChangeText={(e) => formatTotalValue(e)}
           maxLength={8}
           px="$2"
